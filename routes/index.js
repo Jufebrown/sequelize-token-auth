@@ -3,5 +3,6 @@
 // requirements and variable declarations
 const { Router } = require('express');
 const router = Router();
+const authRoutes = require('../routes/auth');
 
-// router.use(require('./auth-route'))
+router.use('/auth', authRoutes);
