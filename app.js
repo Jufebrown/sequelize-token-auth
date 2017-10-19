@@ -1,10 +1,10 @@
 'use strict';
 
-require('dotenv').config()
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-const cors = require('cors')
+const cors = require('cors');
 const routes = require('./routes/');
 
 const app = express();
@@ -12,9 +12,9 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use(cors())
+app.use(cors());
 
-app.use('/api/v1/', routes)
+// app.use('/api/v1/', routes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -25,24 +25,24 @@ app.use(function(req, res, next) {
 
 if(app.get('env') === 'development' || app.get('env') === 'test') {
   app.use((err,req,res,next) => {
-    console.log("error", err)
-    res.status(err.status || 500)
+    console.log('error', err);
+    res.status(err.status || 500);
     res.json({
       message: err.message,
       error: err
-    })
-  })
+    });
+  });
 }
 
 //default to production
 app.use((err,req,res,next) => {
-    console.log("error", err)
-    res.status(err.status || 500)
-    res.json({
-      message: err.message,
-      error: {}
-    })
-  })
+  console.log('error', err);
+  res.status(err.status || 500);
+  res.json({
+    message: err.message,
+    error: {}
+  });
+});
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
