@@ -1,5 +1,4 @@
 const bcrypt = require('bcryptjs');
-// const sequelize = require('sequelize');
 
 function createUser(req) {
   const {User} = req.app.get('models');
