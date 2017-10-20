@@ -2,15 +2,18 @@ const bcrypt = require('bcryptjs');
 // const sequelize = require('sequelize');
 
 function createUser(req) {
-  const {user} = req.app.get('models');
+  const {User} = req.app.get('models');
   const salt = bcrypt.genSaltSync();
   const hash = bcrypt.hashSync(req.body.password, salt);
-  return user
+  return User
     .create({
+      id: null,
       username: req.body.username,
       password: hash
     })
-    .returning('*');
+    .then((data) => {
+      return data.dataValues;
+    });
 }
 
 module.exports = {

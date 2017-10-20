@@ -13,13 +13,14 @@ chai.use(chaiHttp);
 describe('routes : auth', () => {
   
   beforeEach(() => {
-    app.get('models').sequelize.sync({force: true});    
+    return app.get('models').sequelize.sync({force: true});
   });
 
+  // tests register route
   describe('POST /auth/register', () => {
     it('should register a new user', (done) => {
       chai.request(server)
-        .post('/auth/register')
+        .post('/api/v1/register')
         .send({
           username: 'jufe',
           password: 'password'
