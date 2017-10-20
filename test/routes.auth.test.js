@@ -5,7 +5,6 @@ process.env.NODE_ENV = 'test';
 const app = require('../app');
 const chai = require('chai');
 const should = chai.should();
-const sequelize = require('sequelize');
 const server = require('../app');
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
