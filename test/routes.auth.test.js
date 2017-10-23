@@ -28,13 +28,13 @@ describe('routes : auth', () => {
   });
 
   // tests register route
-  describe('POST/register', () => {
+  describe('POST /register', () => {
     it('should register a new user', (done) => {
       chai.request(server)
         .post('/api/v1/register')
         .send({
           username: 'geronimo',
-          password: 'password1'
+          password: 'password'
         })
         .end((err, res) => {
           should.not.exist(err);
@@ -47,8 +47,9 @@ describe('routes : auth', () => {
         });
     });
   });
-  
-  describe('POST/login', () => {
+
+  // tests login route
+  describe('POST /login', () => {
     it('should login a user', (done) => {
       chai.request(server)
         .post('/api/v1/login')
@@ -64,6 +65,21 @@ describe('routes : auth', () => {
           res.body.should.include.keys('status', 'token');
           res.body.status.should.eql('success');
           should.exist(res.body.token);
+          done();
+        });
+    });
+    it('should not login an unregistered user', (done) => {
+      chai.request(server)
+        .post('/api/v1/login')
+        .send({
+          username: 'sid',
+          password: 'viscous'
+        })
+        .end((err, res) => {
+          should.exist(err);
+          res.status.should.eql(500);
+          res.type.should.eql('application/json');
+          res.body.status.should.eql('error');
           done();
         });
     });

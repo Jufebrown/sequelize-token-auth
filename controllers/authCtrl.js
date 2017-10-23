@@ -35,6 +35,7 @@ module.exports.loginUser = (req, res, next) => {
       });
     })
     .catch((err) => {
+      console.log('HEEEEEEYYYYYYYYYYYYYY');
       res.status(500).json({
         status: 'error'
       });
