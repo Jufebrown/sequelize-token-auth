@@ -19,3 +19,24 @@ module.exports.registerUser = (req, res, next) => {
     });
 };
 
+module.exports.loginUser = (req, res, next) => {
+  const username = req.body.username;
+  const password = req.body.password;
+  return authHelpers.getUser(username)
+    .then((response) => {
+      authHelpers.comparePass(password, response.password);
+      return response;
+    })
+    .then((response) => { return localAuth.encodeToken(response); })
+    .then((token) => {
+      res.status(200).json({
+        status: 'success',
+        token: token
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: 'error'
+      });
+    });
+};

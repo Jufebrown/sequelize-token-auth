@@ -1,7 +1,8 @@
 const bcrypt = require('bcryptjs');
+const {User} = require('../models');
+
 
 function createUser(req) {
-  const {User} = req.app.get('models');
   const salt = bcrypt.genSaltSync();
   const hash = bcrypt.hashSync(req.body.password, salt);
   return User
@@ -15,6 +16,21 @@ function createUser(req) {
     });
 }
 
+function getUser(username) {
+  return User.findOne({where: {username: username}})
+    .then((data) => {
+      return data.dataValues;
+    });
+}
+
+function comparePass(userPassword, databasePassword) {
+  const bool = bcrypt.compareSync(userPassword, databasePassword);
+  if (!bool) throw new Error('bad pass silly monkey');
+  else return true;
+}
+
 module.exports = {
-  createUser
+  createUser,
+  getUser,
+  comparePass
 };

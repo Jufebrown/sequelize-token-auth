@@ -17,7 +17,7 @@ describe('routes : auth', () => {
     return app.get('models').sequelize.sync({force: true})
       .then(() => {
         const salt = bcrypt.genSaltSync();
-        const hash = bcrypt.hashSync('password', salt);
+        const hash = bcrypt.hashSync('password123', salt);
         User
           .create({
             id: null,
