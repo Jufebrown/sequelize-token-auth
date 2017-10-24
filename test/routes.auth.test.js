@@ -28,10 +28,10 @@ describe('routes : auth', () => {
   });
 
   // tests register route
-  describe('POST /register', () => {
+  describe('POST /auth/register', () => {
     it('should register a new user', (done) => {
       chai.request(server)
-        .post('/api/v1/register')
+        .post('/api/v1/auth/register')
         .send({
           username: 'geronimo',
           password: 'password'
@@ -49,10 +49,10 @@ describe('routes : auth', () => {
   });
 
   // tests login route
-  describe('POST /login', () => {
+  describe('POST /auth/login', () => {
     it('should login a user', (done) => {
       chai.request(server)
-        .post('/api/v1/login')
+        .post('/api/v1/auth/login')
         .send({
           username: 'aidan',
           password: 'password123'
@@ -71,7 +71,7 @@ describe('routes : auth', () => {
 
     it('should not login an unregistered user', (done) => {
       chai.request(server)
-        .post('/api/v1/login')
+        .post('/api/v1/auth/login')
         .send({
           username: 'sid',
           password: 'viscous'
@@ -86,18 +86,18 @@ describe('routes : auth', () => {
     });
   });
 
-  describe('GET /user', () => {
+  describe('GET /auth/user', () => {
     it('should return a success', (done) => {
       chai.request(server)
-        .post('/login')
+        .post('/api/v1/auth/login')
         .send({
-          username: 'jeremy',
-          password: 'johnson123'
+          username: 'aidan',
+          password: 'password123'
         })
         .end((error, response) => {
           should.not.exist(error);
           chai.request(server)
-            .get('/user')
+            .get('/api/v1/auth/user')
             .set('authorization', 'Bearer ' + response.body.token)
             .end((err, res) => {
               should.not.exist(err);
@@ -110,7 +110,7 @@ describe('routes : auth', () => {
     });
     it('should throw an error if a user is not logged in', (done) => {
       chai.request(server)
-        .get('/user')
+        .get('/api/v1/auth/user')
         .end((err, res) => {
           should.exist(err);
           res.status.should.eql(400);

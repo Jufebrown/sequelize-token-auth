@@ -35,9 +35,14 @@ module.exports.loginUser = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log('HEEEEEEYYYYYYYYYYYYYY');
       res.status(500).json({
         status: 'error'
       });
     });
+};
+
+module.exports.getUser = (req, res, next) => {
+  res.status(200).json({
+    status: 'success',
+  });
 };
