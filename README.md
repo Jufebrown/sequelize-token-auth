@@ -152,11 +152,37 @@ $ sequelize init
 ```
 
 ### Let's create a Users table in our database
-1. Make sure you have sequelize-cli installed and run (all one line):
+1. Make sure you have sequelize-cli installed globally and run (all one line):
 ```
 sequelize model:create --name User --attributes username:string,password:string,admin:boolean
 ```
-This will create folders for models and migrations and 
+This will create folders for models and migrations and the model and migration file for User.
+
+2. Modify the migration.
+```
+username: {
+  allowNull: false,
+  type: Sequelize.STRING
+},
+password: {
+  allowNull: false,
+  type: Sequelize.STRING
+},
+admin: {
+  allowNull: false,
+  defaultValue: false,
+  type: Sequelize.BOOLEAN
+},
+```
+3. Run migrations.
+```
+$ sequelize db:migrate
+```
+Check in psql to make sure the table columns are correct.
+ 
+### Begin building auth
+
+
 
 
 
