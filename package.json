@@ -20,6 +20,8 @@
     "chai-http": "^3.0.0"
   },
   "scripts": {
+    "db:reset": "sequelize db:migrate:undo:all && sequelize db:migrate",
+    "start": "node bin/seq-tok",
     "test": "nodemon --exec \"mocha --recursive\" -R list"
   },
   "repository": {
