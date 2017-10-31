@@ -5,7 +5,7 @@ This is a walkthrough for building a node/express app that uses json web tokens 
 
 There is an angular front end that connects to this app at: https://github.com/Jufebrown/angular-token-auth
 
-If you want to clone and run the code in this repo, you will need to run ```npm i``` to install the dependencies. Also you will need to add a .env file to the root directory with the appropriate contents. Please check the .env-example or read the section on creating the .env below.
+If you want to clone and run the code in this repo, you will need to run ```npm i``` to install the dependencies. Also, you will need to add a .env file to the root directory with the appropriate contents. Please check the .env-example or read the section on creating the .env below.
 
 ## Tutorial Start:
 
