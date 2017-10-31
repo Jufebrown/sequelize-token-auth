@@ -1,7 +1,7 @@
 # sequelize-token-auth
 
 ## Summary:
-This is a walkthrough for buiding a node/express app that uses json web tokens for auth and a postgres database and sequelize orm. The app is built with tests and is heavily influenced by Michael Herman's tutorial: http://mherman.org/blog/2016/10/28/token-based-authentication-with-node/#.We-bnWSnEWp
+This is a walkthrough for building a node/express app that uses json web tokens for auth and a postgres database and sequelize orm. The app is built with tests and is heavily influenced by Michael Herman's tutorial: http://mherman.org/blog/2016/10/28/token-based-authentication-with-node/#.We-bnWSnEWp
 
 There is an angular front end that connects to this app at: https://github.com/Jufebrown/angular-token-auth
 
