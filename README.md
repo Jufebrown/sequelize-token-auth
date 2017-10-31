@@ -249,6 +249,156 @@ describe('auth: local', () => {
 ```
 3. Run the test. It should pass.
 
+### Add decodeToken function.
+1. In local.js:
+```
+//decodes token
+function decodeToken(token, callback) {
+  const payload = jwt.decode(token, process.env.TOKEN_SECRET);
+  const now = moment().unix();
+  // check if the token has expired
+  if (now > payload.exp) callback('Token has expired.');
+  else callback(null, payload);
+}
+
+module.exports = {
+  encodeToken,
+  decodeToken
+};
+```
+2. Write test in auth.local.test.js
+```
+describe('decodeToken()', () => {
+  it('should return a payload', (done) => {
+    const token = localAuth.encodeToken({id: 1});
+    should.exist(token);
+    token.should.be.a('string');
+    localAuth.decodeToken(token, (err, res) => {
+      should.not.exist(err);
+      res.sub.should.eql(1);
+      done();
+    });
+  });
+});
+```
+3. Run tests. They should pass.
+
+### TDD for a new user route
+1. Make a new test file
+```
+$ touch test/routes.auth.test.js
+```
+2. Add db sync call in beforeEach.
+```
+'use strict';
+
+process.env.NODE_ENV = 'test';
+
+const app = require('../app');
+const chai = require('chai');
+const should = chai.should();
+const server = require('../app');
+const chaiHttp = require('chai-http');
+chai.use(chaiHttp);
+
+describe('routes : auth', () => {
+  beforeEach(() => {
+    return app.get('models').sequelize.sync({force: true});   
+  });
+```
+3. Add a describe block to test posting a new user.
+```
+describe('POST /auth/register', () => {
+  it('should register a new user', (done) => {
+    chai.request(server)
+      .post('/api/v1/auth/register')
+      .send({
+        username: 'jufe',
+        password: 'password'
+      })
+      .end((err, res) => {
+        should.not.exist(err);
+        res.redirects.length.should.eql(0);
+        res.status.should.eql(200);
+        res.type.should.eql('application/json');
+        res.body.should.include.keys('status', 'token');
+        res.body.status.should.eql('success');
+        done();
+      });
+  });
+});
+```
+4. Test should fail.
+5. Start code to make tests pass
+- ```$ mkdir routes```
+- ```$ touch routes/index.js```
+- In index.js:
+```
+'use strict';
+
+// requirements and variable declarations
+const { Router } = require('express');
+const router = Router();
+
+router.use(require('./auth'));
+
+module.exports = router;
+```
+-```$ touch routes/auth.js```
+- In auth.js:
+```
+const express = require('express');
+const router = express.Router();
+
+const localAuth = require('../auth/local');
+const authHelpers = require('../auth/_helpers');
+
+router.post('/auth/register', (req, res, next)  => {
+  return authHelpers.createUser(req)
+  .then((user) => { return localAuth.encodeToken(user); })
+  .then((token) => {
+    res.status(200).json({
+      status: 'success',
+      token: token
+    });
+  })
+  .catch((err) => {
+    res.status(500).json({
+      status: 'error'
+    });
+  });
+});
+
+module.exports = router;
+```
+- ```$ touch auth/_helpers.js```
+- In _helpers.js:
+```
+const bcrypt = require('bcryptjs');
+
+function createUser(req) {
+  const {User} = req.app.get('models');
+  const salt = bcrypt.genSaltSync();
+  const hash = bcrypt.hashSync(req.body.password, salt);
+  return User
+    .create({
+      id: null,
+      username: req.body.username,
+      password: hash
+    })
+    .then((data) => {
+      return data.dataValues;
+    });
+}
+
+module.exports = {
+  createUser
+};
+
+```
+
+
+
 
 
 
