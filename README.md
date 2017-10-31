@@ -621,7 +621,7 @@ module.exports.getUser = (req, res, next) => {
 ```
 - Tests should pass
 ## End of tutorial.
-
+Remember to check out https://github.com/Jufebrown/angular-token-auth for a tutorial on how to connect an angular front-end.
 
 
 
