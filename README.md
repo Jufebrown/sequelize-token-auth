@@ -349,6 +349,18 @@ module.exports = router;
 ```
 const express = require('express');
 const router = express.Router();
+const {registerUser} = require('../controllers/authCtrl');
+
+router.post('/auth/register', registerUser);
+
+module.exports = router;
+```
+- ```$ mkdir controllers```
+- ```$ touch controllers/authCtrl.js```
+- In authCtrl.js:
+```
+const express = require('express');
+const router = express.Router();
 
 const localAuth = require('../auth/local');
 const authHelpers = require('../auth/_helpers');
@@ -441,6 +453,15 @@ const bcrypt = require('bcryptjs');
       });
 });
 ```
+3. Test should fail.
+4. Begin code to make test pass:
+- Add a login route to routes/auth.js
+```
+const {registerUser, loginUser} = require('../controllers/authCtrl');
+...
+router.post('/auth/login', loginUser);
+```
+
 
 
 
