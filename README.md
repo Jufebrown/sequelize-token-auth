@@ -181,6 +181,78 @@ $ sequelize db:migrate
 Check in psql to make sure the table columns are correct.
  
 ### Begin building auth
+1. At the project root:
+```
+$ mkdir auth
+$ touch auth/local.js
+```
+2. In the local.js file:
+```
+'use strict';
+
+const moment = require('moment');
+const jwt = require('jwt-simple');
+
+const encodeToken = (user) => {
+  const payload = {
+    exp: moment().add(14, 'days').unix(),
+    iat: moment.unix(),
+    sub: user.id
+  };
+  return jwt.encode(payload, process.env.TOKEN_SECRET);
+}
+
+module.exports = {
+ encodeToken
+};
+```
+3. Generate secret key
+- Either use https://github.com/broofa/node-uuid or if you have python (most mac users do) follow these steps in your terminal:
+```
+$ python
+>>> import os
+>>> os.random(24)
+b'\x174\xddi\xd0\xbd\x0124!~\xda\x8bF\x90\x83\x9f\xa6,/\x11(\xcd\xf7'
+>>>
+```
+- Add your secret key to the .env file
+```
+TOKEN_SECRET=\x174\xddi\xd0\xbd\x0124!~\xda\x8bF\x90\x83\x9f\xa6,/\x11(\xcd\xf7
+```
+### Let's test encode token.
+1. Make a test folder and test file.
+  ```
+    $ mkdir test
+    $ touch mkdir/auth.local.test.js
+  ```
+2. Write a test for encodeToken in auth.local.test.js:
+```
+'use strict';
+
+process.env.NODE_ENV = 'test';
+
+const chai = require('chai');
+const should = chai.should();
+const server = require('../app');
+const localAuth = require('../auth/local');
+
+describe('auth: local', () => {
+  describe('encodeToken()', () => {
+    it('should return a token', (done) => {
+      const results = localAuth.encodeToken({id: 1});
+      should.exist(results);
+      results.should.be.a('string');
+      done();
+    });
+  });
+});
+```
+3. Run the test. It should pass.
+
+
+
+
+
 
 
 
