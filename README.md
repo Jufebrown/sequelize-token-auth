@@ -34,7 +34,7 @@ If you want to clone and run the code in this repo, you will need to run ```npm 
 - dotenv is for setting environment variables
 - express is for setting up routing and the http listener
 - jwt-simple is for the json web tokens - as Michael Herman say in his tutorial - use something more robust in an actual production app
-- moment is for timestamping our tokens
+- moment is for time-stamping our tokens
 - pg is the postgres database
 -  sequelize is our orm
 - mocha, chai, and chai-http are for testing
