@@ -461,6 +461,167 @@ const {registerUser, loginUser} = require('../controllers/authCtrl');
 ...
 router.post('/auth/login', loginUser);
 ```
+- Add loginUser() to authCtrl.js:
+```
+module.exports.loginUser = (req, res, next) => {
+ const username = req.body.username;
+ const password = req.body.password;
+ return authHelpers.getUser(username)
+  .then((response) => {
+    authHelpers.comparePass(password, response.password);
+    return response;
+  })
+  .then((response) => { return localAuth.encodeToken(response); })
+  .then((token) => {
+    res.status(200).json({
+      status: 'success',
+      token: token
+    });
+  })
+  .catch((err) => {
+    res.status(500).json({
+      status: 'error'
+    });
+  });
+};
+```
+- Add getUser and comparePass to _helpers.js
+```
+function getUser(username) {
+  return User.findOne({where: {username: username}})
+  .then((data) => {
+    return data.dataValues;
+  });
+}
+
+function comparePass(userPassword, databasePassword) {
+  const bool = bcrypt.compareSync(userPassword, databasePassword);
+  if (!bool) throw new Error('bad pass silly monkey');
+  else return true;
+}
+
+module.exports = {
+  createUser,
+  getUser,
+  comparePass
+};
+```
+- Tests should pass.
+5. Add test for an unregistered user (in routes.auth.test.js):
+```
+it('should not login an unregistered user', (done) => {
+    chai.request(server)
+      .post('/api/v1/auth/login')
+      .send({
+        username: 'sid',
+        password: 'viscous'
+      })
+      .end((err, res) => {
+        should.exist(err);
+        res.status.should.eql(500);
+        res.type.should.eql('application/json');
+        res.body.status.should.eql('error');
+        done();
+      });
+  });
+```
+6. Tests should still pass.
+### TDD for user route
+1. Write test (in routes.auth.test.js):
+```
+describe('GET /user', () => {
+  it('should return a success', (done) => {
+    chai.request(server)
+      .post('/api/v1/auth/login')
+      .send({
+        username: 'aidan',
+        password: 'password123'
+      })
+      .end((error, response) => {
+        should.not.exist(error);
+        chai.request(server)
+          .get('/api/v1/auth/user')
+          .set('authorization', 'Bearer ' + response.body.token)
+          .end((err, res) => {
+            should.not.exist(err);
+            res.status.should.eql(200);
+            res.type.should.eql('application/json');
+            res.body.status.should.eql('success');
+            done();
+          });
+      });
+  });
+  it('should throw an error if a user is not logged in', (done) => {
+    chai.request(server)
+      .get('api/v1/auth/user')
+      .end((err, res) => {
+        should.exist(err);
+        res.status.should.eql(400);
+        res.type.should.eql('application/json');
+        res.body.status.should.eql('Please log in');
+        done();
+      });
+  });
+});
+```
+2. Tests should fail.
+3. Begin code to make tests pass.
+- Add route to auth.js
+```
+const {registerUser, loginUser, getUser} = require('../controllers/authCtrl');
+	const authHelpers = require('../auth/_helpers');
+	…
+router.get('/auth/user', authHelpers.ensureAuthenticated, getUser);
+```
+- Add ensureAuthenticated() to _helpers.js
+```
+const localAuth = require('./local.js');
+function ensureAuthenticated(req, res, next) {
+  if (!(req.headers && req.headers.authorization)) {
+    return res.status(400).json({
+      status: 'Please log in'
+    });
+  }
+  // decode the token
+  var header = req.headers.authorization.split(' ');
+  var token = header[1];
+  localAuth.decodeToken(token, (err, payload) => {
+    if (err) {
+      return res.status(401).json({
+        status: 'Token has expired'
+      });
+    } else {
+      // check if the user still exists in the db
+      User.findOne({where: {id: parseInt(payload.sub)}})
+        .then((user) => {
+          next();
+        })
+        .catch((err) => {
+          res.status(500).json({
+            status: 'error'
+          });
+        });
+    }
+  });
+}
+module.exports = {
+  createUser,
+  getUser,
+  comparePass,
+  ensureAuthenticated
+};
+```
+- Add getUser to authCtrl.js
+```
+module.exports.getUser = (req, res, next) => {
+  res.status(200).json({
+    status: 'success',
+  });
+};
+```
+- Tests should pass
+## End of tutorial.
+
 
 
 
